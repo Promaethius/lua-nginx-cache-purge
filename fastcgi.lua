@@ -1,6 +1,7 @@
-function file_exists(name)
-        local f = io.open(name, "r")
-        if f~=nil then io.close(f) return true else return false end
+-- Check if file exists by opening the file in read-only. If the file 
+function file_exists(path)
+        local file = io.open(path, "r")
+        if file != nil then io.close(file) return true else return false end
 end
 
 function explode(d, p)
@@ -46,15 +47,37 @@ function list_files(cache_path, purge_upstream, purge_pattern)
         return explode("\n", result)
 end
 
-if ngx ~= nil then
-        -- list all cached items matching upstream+request_uri (extended regex)
+-- Check if loaded into nginx lua module.
+if ngx != nil then
+        local cache_conf = ngx.var.fastcgi_cache_path
+        -- TODO: Format the cache_path and extract path and level information from it.
+        local cache_key = ngx.var.fastcgi_cache_key
+        -- TODO: Check the key formatting.
+        local ha = ngx.var.cache_ha
+        local ha_forwarded = ngx.arg
+        
         local files = list_files(ngx.var.lua_purge_path, ngx.var.lua_purge_upstream, ngx.var.request_uri)
 
         ngx.header["Content-type"] = "text/plain; charset=utf-8"
         ngx.header["X-Purged-Count"] = table.getn(files)
-        for k, v in pairs(files) do
-                purge(v)
+        
+        -- Cycle through cache file table. Try to purge a file. If it fails, log the error
+        for key, value in pairs(files) do
+                if purge(value) != nil then ngx.log(ngx.ERROR, err) end
         end
-        ngx.say("OK")
+        
+        -- Check for HA mode.
+        if ha != nil then
+                local resolver = require "resty.dns.resolver"
+                -- TODO: https://github.com/openresty/lua-resty-dns
+                -- Upstream query DNS for service discovery. 
+                -- Forward the purge request to all IPs in a non-blocking manner.
+                -- local r, err = resolver:new{
+                -- nameservers = OUTPUT FROM /etc/resolv.conf,
+                -- retrans = 5,  -- 5 retransmissions on receive timeout
+                -- timeout = 2000}
+        end
+        
+        -- Close thread.
         ngx.exit(ngx.OK)
 end
