@@ -68,16 +68,18 @@ if ngx != nil then
         end
         
         -- Check for HA mode.
-        if ha != nil then
-                local resolver = require "resty.dns.resolver"
-                -- TODO: https://github.com/openresty/lua-resty-dns
-                -- Upstream query DNS for service discovery. 
-                -- Forward the purge request to all IPs in a non-blocking manner.
-                -- local r, err = resolver:new{
-                -- nameservers = OUTPUT FROM /etc/resolv.conf,
-                -- retrans = 5,  -- 5 retransmissions on receive timeout
-                -- timeout = 2000}
-                -- Send a sub request to all IPs in a non-blocking manner.
+        if ha == true then
+                -- Grab a list of peers from the shared memory of the upstream dns module.
+                local peers, err = ngx.shared.purge_upstream_peers.get
+                -- Check for errors such as the shared mem space does not exist.
+                if err != nil then
+                        ngx.log(ngx.ERROR, err)
+                else
+                        -- If the list is not empty, create an async sub-request for each IP.
+                        if peers != nil then
+                                --
+                        end                        
+                end                        
         end
         
         -- Close thread.
