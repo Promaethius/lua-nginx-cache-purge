@@ -1,5 +1,6 @@
 -- Check if file exists by opening the file in read-only. If the file 
 function file_exists(path)
+        -- TODO: Use a non-blocking, less memory intensive file check method rather than loading sections of the cache into memory.
         local file = io.open(path, "r")
         if file != nil then io.close(file) return true else return false end
 end
@@ -76,6 +77,7 @@ if ngx != nil then
                 -- nameservers = OUTPUT FROM /etc/resolv.conf,
                 -- retrans = 5,  -- 5 retransmissions on receive timeout
                 -- timeout = 2000}
+                -- Send a sub request to all IPs in a non-blocking manner.
         end
         
         -- Close thread.
