@@ -1,4 +1,4 @@
-function my_project_updated_send_email( $post_id ) {
+function lua_cache_purge( $post_id ) {
 
 	$post_url = get_permalink( $post_id );
 
@@ -12,4 +12,4 @@ function my_project_updated_send_email( $post_id ) {
 		die($error);
 	}
 }
-add_action( 'save_post', 'my_project_updated_send_email' );
+add_action( 'save_post', 'lua_cache_purge' );
