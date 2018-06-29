@@ -1,9 +1,9 @@
 --[[
 init_by_lua_file /etc/nginx/lua-nginx-cache-purge/init_zmq_client.lua;
 
-# This module runs two lua workers that Sub and Pub to the zmq server.
+# This module runs two lua workers that Sub and Dealer to the zmq server.
 # Pub:
-# By utilizing a shared dictionary, the Pub client will loop and push new DICT items to the server.
+# By utilizing a shared dictionary, the Dealer client will loop and push new DICT items to the server.
 # Sub: 
 ]]--
 
