@@ -9,19 +9,24 @@ import (
 
 // TODO: create subroutines for both the broker and publisher.
 
+func server_broker() {
+	context, _ := zmq.NewContext()
+	defer context.Close()
+
+	broker, _ := context.NewSocket(zmq.ROUTER)
+	broker.Bind("tcp://*:5600")
+	defer frontend.Close()
+	
+	// TODO: ipc between broker and publisher
+}
+
+func server_publisher() {
+	
+}
+
 func main() {    
-    // Create the broker socket.
-    broker, _ := zmq.NewSocket(zmq.ROUTER)
-    defer broker.Close()
-    broker.Bind("tcp://*:5600")
-    
-    // Create publisher socket.
-    publisher, _ := zmq.NewSocket(zmq.PUB)
-	defer publisher.Close()
-	publisher.Bind("tcp://*:5601")
-    
-    // Start MAIN control loop.
-    for {
-        
-    }
+	go server_broker()
+	go Server_publisher()
+	
+	
 }
