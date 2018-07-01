@@ -15,12 +15,32 @@ func server_broker() {
 
 	broker, _ := context.NewSocket(zmq.ROUTER)
 	broker.Bind("tcp://*:5600")
-	defer frontend.Close()
+	defer broker.Close()
 	
-	// TODO: ipc between broker and publisher
+	dealer, _ := context.NewSocket(zmq.DEALER)
+	dealer.Bind("ipc://dealer.ipc")
+	defer dealer.Close()
+	
+	for {
+		
+	}
 }
 
 func server_publisher() {
+	context, _zmq.NewContext()
+	defer context.Close()
+	
+	publisher, _ := context.NewSocket(zmq.PUB)
+	publisher.Bind("tcp://*:5601")
+	defer publisher.Close()
+	
+	broker, _ := context.NewSocket(zmq.ROUTER)
+	dealer.Bind("ipc://dealer.ipc")
+	defer broker.Close()
+	
+	for {
+		
+	}
 	
 }
 
